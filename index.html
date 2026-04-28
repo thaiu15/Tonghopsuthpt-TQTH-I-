@@ -1,125 +1,263 @@
-# Tonghopsuthpt-TQTH-I-
-<!DOCTYPE html><html lang="vi">
+# tongonsuthpt-TQThái
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Thư viện hình ảnh</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f5f6fa;
-    }
-    header {
-      background: #4a69bd;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 20px;
-    }
-    .container {
-      display: flex;
-    }
-    .menu {
-      width: 250px;
-      background: white;
-      padding: 10px;
-      border-right: 1px solid #ddd;
-      height: 100vh;
-      overflow-y: auto;
-    }
-    .menu h3 {
-      margin-top: 15px;
-    }
-    .menu button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      border: none;
-      background: #ecf0f1;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    .menu button:hover {
-      background: #dcdde1;
-    }
-    .content {
-      flex: 1;
-      padding: 20px;
-    }
-    .images {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .images img {
-      width: 150px;
-      border-radius: 10px;
-    }
-    .add-btn {
-      margin-top: 15px;
-      padding: 10px;
-      background: #4a69bd;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body><header>📁 Thư viện hình ảnh của bạn</header><div class="container">
-  <div class="menu">
-    <h3>I. Phần 1</h3>
-    <button onclick="loadSection('section1')">Bài 1</button>
-    <button onclick="loadSection('section2')">Bài 2</button><h3>II. Phần 2</h3>
-<button onclick="loadSection('section3')">Bài 3</button>
-<button onclick="loadSection('section4')">Bài 4</button>
+<meta charset="UTF-8">
+<title>Hệ thống học tập</title>
 
-  </div>  <div class="content">
-    <h2 id="title">Chọn mục để xem</h2>
-    <div class="images" id="imageContainer"></div>
-    <input type="file" id="fileInput" style="display:none" accept="image/*">
-    <button class="add-btn" onclick="document.getElementById('fileInput').click()">+ Thêm ảnh</button>
-  </div>
-</div><script>
-  let data = {
-    section1: [],
-    section2: [],
-    section3: [],
-    section4: []
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #f1f2f6;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #2f3542;
+  color: white;
+}
+
+.edit-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #ffa502;
+  color: white;
+  cursor: pointer;
+}
+
+/* LAYOUT */
+.container {
+  display: flex;
+}
+
+.sidebar {
+  width: 280px;
+  background: white;
+  padding: 10px;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* MENU */
+.section-title {
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  margin-top: 10px;
+}
+
+.red { background: #ff4757; }
+.blue { background: #1e90ff; }
+
+.item {
+  padding: 6px;
+  margin: 4px 0;
+  background: #f1f2f6;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #dfe4ea;
+}
+
+.add-btn {
+  display: none;
+  margin: 5px 0;
+  padding: 5px;
+  width: 100%;
+  border: none;
+  background: #2ed573;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* CONTENT */
+.images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.images img {
+  width: 140px;
+  border-radius: 10px;
+}
+
+.upload-box {
+  width: 140px;
+  height: 140px;
+  border: 2px dashed #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #888;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+  <h2>📚 Hệ thống học tập</h2>
+  <button class="edit-btn" onclick="toggleEdit()">✏️ Edit</button>
+</header>
+
+<div class="container">
+
+<div class="sidebar" id="menu"></div>
+
+<div class="content">
+  <h2 id="title">Chọn bài</h2>
+  <div class="images" id="images"></div>
+  <input type="file" id="fileInput" style="display:none">
+</div>
+
+</div>
+
+<script>
+let editMode = false;
+
+const structure = {
+  "Mục lục - Chủ đề bài": {
+    color: "red",
+    topics: {
+      "Chủ đề 1": 2,
+      "Chủ đề 2": 3,
+      "Chủ đề 3": 2,
+      "Chủ đề 4": 5,
+      "Chủ đề 5": 3,
+      "Chủ đề 6": 6,
+      "Chủ đề 7": 3
+    }
+  },
+  "Tiếp giải nhanh khoanh đúng": {
+    color: "blue",
+    topics: {
+      "Phần 1": 0,
+      "Phần 2": 0,
+      "Phần 3": 0
+    }
+  }
+};
+
+let data = {};
+let currentKey = "";
+
+function toggleEdit() {
+  editMode = !editMode;
+
+  document.querySelectorAll(".add-btn").forEach(btn => {
+    btn.style.display = editMode ? "block" : "none";
+  });
+
+  render();
+}
+
+function init() {
+  const menu = document.getElementById("menu");
+
+  for (let section in structure) {
+    let sec = structure[section];
+
+    let title = document.createElement("div");
+    title.className = "section-title " + sec.color;
+    title.innerText = section;
+    menu.appendChild(title);
+
+    for (let topic in sec.topics) {
+      let topicDiv = document.createElement("div");
+      topicDiv.innerHTML = "<b>" + topic + "</b>";
+      menu.appendChild(topicDiv);
+
+      let count = sec.topics[topic];
+
+      for (let i = 1; i <= count; i++) {
+        createItem(menu, topic + " - Bài " + i);
+      }
+
+      let add = document.createElement("button");
+      add.innerText = "+ Thêm bài";
+      add.className = "add-btn";
+      add.onclick = () => {
+        let name = prompt("Nhập tên bài:");
+        if (name) createItem(menu, topic + " - " + name);
+      };
+      menu.appendChild(add);
+    }
+  }
+}
+
+function createItem(menu, name) {
+  let div = document.createElement("div");
+  div.className = "item";
+  div.innerText = name;
+
+  data[name] = [];
+
+  div.onclick = () => {
+    currentKey = name;
+    document.getElementById("title").innerText = name;
+    render();
   };
 
-  let currentSection = null;
+  menu.appendChild(div);
+}
 
-  function loadSection(section) {
-    currentSection = section;
-    document.getElementById('title').innerText = section;
-    renderImages();
-  }
+function render() {
+  let box = document.getElementById("images");
+  box.innerHTML = "";
 
-  function renderImages() {
-    let container = document.getElementById('imageContainer');
-    container.innerHTML = '';
+  if (!currentKey) return;
 
-    if (!currentSection) return;
-
-    data[currentSection].forEach(src => {
-      let img = document.createElement('img');
-      img.src = src;
-      container.appendChild(img);
-    });
-  }
-
-  document.getElementById('fileInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (!file || !currentSection) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      data[currentSection].push(e.target.result);
-      renderImages();
-    };
-    reader.readAsDataURL(file);
+  data[currentKey].forEach(src => {
+    let img = document.createElement("img");
+    img.src = src;
+    box.appendChild(img);
   });
-</script></body>
-</html>
+
+  // chỉ hiện upload khi edit
+  if (editMode) {
+    let upload = document.createElement("div");
+    upload.className = "upload-box";
+    upload.innerText = "+";
+    upload.onclick = () => {
+      document.getElementById("fileInput").click();
+    };
+    box.appendChild(upload);
+  }
+}
+
+document.getElementById("fileInput").addEventListener("change", function(e){
+  let file = e.target.files[0];
+  if (!file) return;
+
+  let reader = new FileReader();
+  reader.onload = function(ev){
+    data[currentKey].push(ev.target.result);
+    render();
+  };
+  reader.readAsDataURL(file);
+});
+
+init();
+</script>
+
+</body>
+  </html>
